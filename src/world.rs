@@ -1,5 +1,5 @@
 // Implementation of the world the cells live in.
-use macroquad::prelude::*;
+use macroquad::{prelude::*, miniquad::FrontFaceOrder};
 
 pub enum WorldState {
     Running,
@@ -28,6 +28,7 @@ impl CellWorld {
             cells: world_vector,
         }
     }
+
     
     pub fn get_state(&self) -> WorldState{
         match self.state {
@@ -45,18 +46,55 @@ impl CellWorld {
 
 
     pub fn change_status(&mut self, x: f32, y: f32) {
+        // Width and height of the cells.
+        let cell_width = screen_width() / self.row_length;
+        let cell_height = screen_height() / self.row_length;
 
+        // Calculate cell position in cell matrix.
+        let x_mat = (x / cell_width).floor();
+        let y_mat = (y / cell_height).floor();
+
+        println!("Cell index: {:?}, {:?}", x_mat, y_mat);
+
+        // Get the cell's index. Convert to a type that can index the vector.
+        let cell_index = (x_mat + y_mat * self.row_length) as usize;
+
+        // Switch the state of the appropriate cell.
+        self.cells[cell_index].switch_status();
     }
 
     pub fn update_world(&mut self) {
+        for cell in self.cells.iter() {
+            let current_index = cell.get_index() as i32;
+            let mut alive_neighbors = 0;
 
+            // // Check neighbors
+            // // Border cases
+            // // Cell is at the top of the board.
+            // if (cell.get_index() / self.row_length).floor() as i32 == 0 {
+
+            // }
+            // // Cell is at the bottom of the board.
+            // else if (cell.get_index() / self.row_length).floor() as i32 == (self.row_length - 1f32) as i32 {
+
+            // }
+
+            // // Cell is not in a border
+            // if self.cells[(current_index - self.row_length as i32 - 1) as usize].is_alive() { alive_neighbors +=1; };
+            // if self.cells[(current_index - self.row_length as i32 + 1) as usize].is_alive() { alive_neighbors +=1; };
+            // if self.cells[(current_index - 1) as usize].is_alive() { alive_neighbors +=1; };
+            // if self.cells[(current_index + 1) as usize].is_alive() { alive_neighbors +=1; };
+            // if self.cells[(current_index + self.row_length as i32 - 1) as usize].is_alive() { alive_neighbors +=1; };
+            // if self.cells[(current_index + self.row_length as i32 + 1) as usize].is_alive() { alive_neighbors +=1; };
+
+        }
     }
 
-    pub fn draw_world(&self) {
+    pub fn draw_world(&self, font: Font) {
         clear_background(BLACK);
 
         for cell in self.cells.iter() {
-            cell.draw_cell();
+            cell.draw_cell(font);
         }
     }
 }

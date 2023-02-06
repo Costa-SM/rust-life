@@ -17,7 +17,7 @@ async fn main() {
 
     loop {
         // Draw world before everything else, so that we can draw on top of it, if necessary.
-        world.draw_world();
+        world.draw_world(font);
 
         if is_key_pressed(KeyCode::Space) {
             world.switch_state()
@@ -26,15 +26,22 @@ async fn main() {
         match world.get_state() {
             WorldState::Running => {
                 world.update_world();
+
+                if is_mouse_button_released(MouseButton::Left) {
+                    let mp = mouse_position();
+                    world.change_status(mp.0, mp.1);
+                
+                    println!("Mouse click at: {:?}, {:?}", mp.0, mp.1);
+                }
             }
 
             WorldState::Stopped => {
-                //"Press Space to Resume"
+                // "Press Space to Resume"
                 let pause_text = screen_width().to_string();
                 let pause_dims = measure_text(&pause_text, Some(font), 30u16, 1.0f32);
                 
                 draw_rectangle(screen_width() * 0.5f32 - pause_dims.width * 0.5f32 - 5f32,
-                    50f32 - pause_dims.height,
+                    50f32 - pause_dims.height - 5f32,
                     pause_dims.width + 10f32,
                     pause_dims.height + 10f32,
                     BLACK);
