@@ -57,10 +57,12 @@ impl Cell {
 
         // Draw the cell
         let cell_margin = 1f32;
-        draw_rectangle(draw_x, draw_y, cell_width, cell_height, BLACK);
 
         if self.status == CellStatus::Alive {
             draw_rectangle(draw_x + cell_margin, draw_y + cell_margin, cell_width - 2f32 * cell_margin, cell_height- 2f32 * cell_margin, WHITE);
+        }
+        else {
+            draw_rectangle(draw_x + cell_margin, draw_y + cell_margin, cell_width - 2f32 * cell_margin, cell_height- 2f32 * cell_margin, DARKGRAY);
         }
 
         // Draw a debug alive neighbor counter.
