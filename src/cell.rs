@@ -31,6 +31,10 @@ impl Cell {
         }
     }
 
+    pub fn kill(&mut self) {
+        self.status = CellStatus::Dead;
+    }
+
     pub fn get_index(&self) -> f32 {
         self.cell_index
     }
@@ -58,13 +62,16 @@ impl Cell {
         // Draw the cell
         let cell_margin = 1f32;
 
-        if self.status == CellStatus::Alive {
-            draw_rectangle(draw_x + cell_margin, draw_y + cell_margin, cell_width - 2f32 * cell_margin, cell_height- 2f32 * cell_margin, WHITE);
-        }
-        else {
-            draw_rectangle(draw_x + cell_margin, draw_y + cell_margin, cell_width - 2f32 * cell_margin, cell_height- 2f32 * cell_margin, DARKGRAY);
+        match self.status {
+            CellStatus::Alive => { 
+                draw_rectangle(draw_x + cell_margin, draw_y + cell_margin, cell_width - 2f32 * cell_margin, cell_height- 2f32 * cell_margin, WHITE); 
+            },
+            CellStatus::Dead => { 
+                draw_rectangle(draw_x + cell_margin, draw_y + cell_margin, cell_width - 2f32 * cell_margin, cell_height- 2f32 * cell_margin, DARKGRAY); 
+            },
         }
 
+        /****************************************** DEBUG ******************************************/
         // Draw a debug alive neighbor counter.
         let text_counter = self.alive_neighbors.to_string();
         let font_size = 10u16;
@@ -76,15 +83,18 @@ impl Cell {
             draw_y + cell_height * 0.5f32 + text_dims.height * 0.5f32,
             TextParams{font, font_size: font_size, color: RED, ..Default::default()}
         );
+        /****************************************** DEBUG ******************************************/
     }
 
     pub fn update_cell(&mut self, alive_neighbors: i32) {
         self.alive_neighbors = alive_neighbors;
-        
-        match alive_neighbors {
-            2 => { self.status = CellStatus::Alive }, 
-            3 => { self.status = CellStatus::Alive }, 
-            _ => { self.status = CellStatus::Dead }, 
+    }
+
+    pub fn run_cell(&mut self) {
+        match self.alive_neighbors {
+            2 => { self.status = CellStatus::Alive },
+            3 => { self.status = CellStatus::Alive },
+            _ => { self.status = CellStatus::Dead },
         }
     }
 }

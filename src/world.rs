@@ -10,6 +10,7 @@ pub struct CellWorld {
     row_length: f32,
     state: WorldState,
     cells: Vec<crate::cell::Cell>,
+    neighbor_count: Vec<i32>,
 }
 
 impl CellWorld {
@@ -26,6 +27,7 @@ impl CellWorld {
             row_length,
             state: WorldState::Stopped,
             cells: world_vector,
+            neighbor_count: vec![0; (row_length * row_length) as usize],
         }
     }
 
@@ -43,7 +45,6 @@ impl CellWorld {
             WorldState::Stopped => self.state = WorldState::Running,
         }
     }
-
 
     pub fn change_status(&mut self, x: f32, y: f32) {
         // Width and height of the cells.
@@ -65,28 +66,117 @@ impl CellWorld {
 
     pub fn update_world(&mut self) {
         for cell in self.cells.iter() {
-            let current_index = cell.get_index() as i32;
             let mut alive_neighbors = 0;
 
-            // // Check neighbors
-            // // Border cases
-            // // Cell is at the top of the board.
-            // if (cell.get_index() / self.row_length).floor() as i32 == 0 {
+            // Cell's position
+            let cell_index = cell.get_index() as usize;
+            let cell_x = cell_index % self.row_length as usize;
+            let cell_y = cell_index / self.row_length as usize;
 
-            // }
-            // // Cell is at the bottom of the board.
-            // else if (cell.get_index() / self.row_length).floor() as i32 == (self.row_length - 1f32) as i32 {
+            // Index corresponding to the adjacent cells.
+            // Allocating them as variables to increase code readability.
+            let top_left = cell_index - self.row_length as usize - 1;
+            let top_center = cell_index - self.row_length as usize;
+            let top_right = cell_index - self.row_length as usize + 1;
 
-            // }
+            let same_right = cell_index + 1;
+            let same_left = cell_index - 1;
 
-            // // Cell is not in a border
-            // if self.cells[(current_index - self.row_length as i32 - 1) as usize].is_alive() { alive_neighbors +=1; };
-            // if self.cells[(current_index - self.row_length as i32 + 1) as usize].is_alive() { alive_neighbors +=1; };
-            // if self.cells[(current_index - 1) as usize].is_alive() { alive_neighbors +=1; };
-            // if self.cells[(current_index + 1) as usize].is_alive() { alive_neighbors +=1; };
-            // if self.cells[(current_index + self.row_length as i32 - 1) as usize].is_alive() { alive_neighbors +=1; };
-            // if self.cells[(current_index + self.row_length as i32 + 1) as usize].is_alive() { alive_neighbors +=1; };
+            let bottom_left = cell_index + self.row_length as usize - 1;
+            let bottom_center = cell_index + self.row_length as usize;
+            let bottom_right = cell_index + self.row_length as usize + 1;
 
+            // Edge cases
+            if cell_x == 0 {
+                if cell_y == 0 {
+                    if self.cells[same_right].is_alive() { alive_neighbors += 1};
+                    if self.cells[bottom_center].is_alive() { alive_neighbors += 1};
+                    if self.cells[bottom_right].is_alive() { alive_neighbors += 1};
+                }
+
+                else if cell_y == (self.row_length - 1f32) as usize {
+                    if self.cells[top_center].is_alive() { alive_neighbors += 1};
+                    if self.cells[top_right].is_alive() { alive_neighbors += 1};
+                    if self.cells[same_right].is_alive() { alive_neighbors += 1};
+                }
+
+                else {
+                    if self.cells[top_center].is_alive() { alive_neighbors += 1};
+                    if self.cells[top_right].is_alive() { alive_neighbors += 1};
+                    if self.cells[same_right].is_alive() { alive_neighbors += 1};
+                    if self.cells[bottom_center].is_alive() { alive_neighbors += 1};
+                    if self.cells[bottom_right].is_alive() { alive_neighbors += 1};
+                }
+            }
+
+            else if cell_x == (self.row_length - 1f32) as usize {
+                if cell_y == 0 {
+                    if self.cells[same_left].is_alive() { alive_neighbors += 1};
+                    if self.cells[bottom_center].is_alive() { alive_neighbors += 1};
+                    if self.cells[bottom_left].is_alive() { alive_neighbors += 1};
+                }
+
+                else if cell_y == (self.row_length - 1f32) as usize {
+                    if self.cells[top_left].is_alive() { alive_neighbors += 1};
+                    if self.cells[top_center].is_alive() { alive_neighbors += 1};
+                    if self.cells[same_left].is_alive() { alive_neighbors += 1};
+                }
+
+                else {
+                    if self.cells[top_left].is_alive() { alive_neighbors += 1};
+                    if self.cells[top_center].is_alive() { alive_neighbors += 1};
+                    if self.cells[same_left].is_alive() { alive_neighbors += 1};
+                    if self.cells[bottom_left].is_alive() { alive_neighbors += 1};
+                    if self.cells[bottom_center].is_alive() { alive_neighbors += 1};
+                }
+            }
+
+            // Corner cases have already been covered in other conditionals. The program can deal with
+            // only the edge cases on this branch.
+            else if cell_y == 0 {
+                if self.cells[same_left].is_alive() { alive_neighbors += 1};
+                if self.cells[same_right].is_alive() { alive_neighbors += 1};
+                if self.cells[bottom_left].is_alive() { alive_neighbors += 1};
+                if self.cells[bottom_center].is_alive() { alive_neighbors += 1};
+                if self.cells[bottom_right].is_alive() { alive_neighbors += 1};
+            }
+
+            else if cell_y == (self.row_length - 1f32) as usize {
+                if self.cells[top_left].is_alive() { alive_neighbors += 1};
+                if self.cells[top_center].is_alive() { alive_neighbors += 1};
+                if self.cells[top_right].is_alive() { alive_neighbors += 1};
+                if self.cells[same_left].is_alive() { alive_neighbors += 1};
+                if self.cells[same_right].is_alive() { alive_neighbors += 1};
+            }
+
+            else {
+                if self.cells[top_left].is_alive() { alive_neighbors += 1};
+                if self.cells[top_center].is_alive() { alive_neighbors += 1};
+                if self.cells[top_right].is_alive() { alive_neighbors += 1};
+                if self.cells[same_left].is_alive() { alive_neighbors += 1};
+                if self.cells[same_right].is_alive() { alive_neighbors += 1};
+                if self.cells[bottom_left].is_alive() { alive_neighbors += 1};
+                if self.cells[bottom_center].is_alive() { alive_neighbors += 1};
+                if self.cells[bottom_right].is_alive() { alive_neighbors += 1};
+            }
+
+            self.neighbor_count[cell_index] = alive_neighbors;
+        }
+
+        for cell in self.cells.iter_mut() {
+            cell.update_cell(self.neighbor_count[cell.get_index() as usize]);
+        }
+    }
+
+    pub fn run_world(&mut self) {
+        for cell in self.cells.iter_mut() {
+            cell.run_cell();
+        }
+    }
+
+    pub fn reset_world(&mut self) {
+        for cell in self.cells.iter_mut() {
+            cell.kill();
         }
     }
 
