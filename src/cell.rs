@@ -78,7 +78,7 @@ impl Cell {
         }
 
         /****************************************** DEBUG ******************************************/
-        if(self.debug) { 
+        if self.debug {
             // Draw a debug alive neighbor counter.
             let text_counter = self.alive_neighbors.to_string();
             let font_size = 10u16;

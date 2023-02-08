@@ -1,5 +1,3 @@
-use std::thread::sleep;
-
 // Macroquad for graphics
 use macroquad::prelude::*;
 use world::WorldState;
