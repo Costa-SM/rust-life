@@ -91,10 +91,15 @@ impl Cell {
     }
 
     pub fn run_cell(&mut self) {
-        match self.alive_neighbors {
-            2 => { self.status = CellStatus::Alive },
-            3 => { self.status = CellStatus::Alive },
-            _ => { self.status = CellStatus::Dead },
+        if self.status == CellStatus::Dead {
+            if self.alive_neighbors == 3 { self.status = CellStatus::Alive };
+        }
+        else {
+            match self.alive_neighbors {
+                2 => self.status = CellStatus::Alive,
+                3 => self.status = CellStatus::Alive,
+                _ => self.status = CellStatus::Dead,
+            }
         }
     }
 }

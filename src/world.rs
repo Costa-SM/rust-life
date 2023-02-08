@@ -1,5 +1,5 @@
 // Implementation of the world the cells live in.
-use macroquad::{prelude::*, miniquad::FrontFaceOrder};
+use macroquad::prelude::*;
 
 pub enum WorldState {
     Running,

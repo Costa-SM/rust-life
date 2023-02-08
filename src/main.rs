@@ -1,7 +1,7 @@
 use std::thread::sleep;
 
 // Macroquad for graphics
-use macroquad::{prelude::*, window};
+use macroquad::prelude::*;
 use world::WorldState;
 
 // Local implementations
@@ -42,7 +42,6 @@ async fn main() {
         match world.get_state() {
             WorldState::Running => {
                 world.run_world();
-                sleep(std::time::Duration::from_millis(250));
             }
 
             WorldState::Stopped => {
