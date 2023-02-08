@@ -12,6 +12,7 @@ pub struct Cell {
     row_length: f32,
     status: CellStatus,
     alive_neighbors: i32,
+    debug: bool,
 }
 
 impl Cell {
@@ -21,6 +22,7 @@ impl Cell {
             row_length,
             status: CellStatus::Dead,
             alive_neighbors: 0,
+            debug: false,
         }
     }
 
@@ -29,6 +31,10 @@ impl Cell {
             CellStatus::Dead => self.status = CellStatus::Alive,
             CellStatus::Alive => self.status = CellStatus::Dead,
         }
+    }
+
+    pub fn switch_debug(&mut self){
+        self.debug = !self.debug;
     }
 
     pub fn kill(&mut self) {
@@ -72,17 +78,19 @@ impl Cell {
         }
 
         /****************************************** DEBUG ******************************************/
-        // Draw a debug alive neighbor counter.
-        let text_counter = self.alive_neighbors.to_string();
-        let font_size = 10u16;
-        let text_dims = measure_text(&text_counter, Some(font), font_size, 1.0f32);
-        
-        draw_text_ex(
-            &text_counter, 
-            draw_x + cell_width * 0.5f32 - text_dims.width * 0.5f32,
-            draw_y + cell_height * 0.5f32 + text_dims.height * 0.5f32,
-            TextParams{font, font_size: font_size, color: RED, ..Default::default()}
-        );
+        if(self.debug) { 
+            // Draw a debug alive neighbor counter.
+            let text_counter = self.alive_neighbors.to_string();
+            let font_size = 10u16;
+            let text_dims = measure_text(&text_counter, Some(font), font_size, 1.0f32);
+
+            draw_text_ex(
+                &text_counter, 
+                draw_x + cell_width * 0.5f32 - text_dims.width * 0.5f32,
+                draw_y + cell_height * 0.5f32 + text_dims.height * 0.5f32,
+                TextParams{font, font_size: font_size, color: RED, ..Default::default()}
+            );
+        }
         /****************************************** DEBUG ******************************************/
     }
 

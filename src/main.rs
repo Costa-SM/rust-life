@@ -30,12 +30,14 @@ async fn main() {
             world.reset_world();
         }
 
+        if is_key_pressed(KeyCode::D) {
+            world.switch_debug();
+        }
+
         if is_mouse_button_released(MouseButton::Left) {
             let mp = mouse_position();
             world.change_status(mp.0, mp.1);
-        
-            println!("Mouse click at: {:?}, {:?}", mp.0, mp.1);
-        }
+            }
 
         world.update_world();
 

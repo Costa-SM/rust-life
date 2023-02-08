@@ -11,6 +11,7 @@ pub struct CellWorld {
     state: WorldState,
     cells: Vec<crate::cell::Cell>,
     neighbor_count: Vec<i32>,
+    debug: bool,
 }
 
 impl CellWorld {
@@ -28,9 +29,9 @@ impl CellWorld {
             state: WorldState::Stopped,
             cells: world_vector,
             neighbor_count: vec![0; (row_length * row_length) as usize],
+            debug: false,
         }
     }
-
     
     pub fn get_state(&self) -> WorldState{
         match self.state {
@@ -46,6 +47,14 @@ impl CellWorld {
         }
     }
 
+    pub fn switch_debug(&mut self) { 
+        self.debug = !self.debug;
+        
+        for cell in self.cells.iter_mut() {
+            cell.switch_debug();
+        }
+    }
+
     pub fn change_status(&mut self, x: f32, y: f32) {
         // Width and height of the cells.
         let cell_width = screen_width() / self.row_length;
@@ -55,8 +64,11 @@ impl CellWorld {
         let x_mat = (x / cell_width).floor();
         let y_mat = (y / cell_height).floor();
 
-        println!("Cell index: {:?}, {:?}", x_mat, y_mat);
-
+        if self.debug {
+            println!("Mouse click at: {:?}, {:?}", x, y);
+            println!("Cell index: {:?}, {:?}", x_mat, y_mat);
+        }
+        
         // Get the cell's index. Convert to a type that can index the vector.
         let cell_index = (x_mat + y_mat * self.row_length) as usize;
 
